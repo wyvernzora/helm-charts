@@ -1,0 +1,20 @@
+
+deployment:
+  image: authelia/authelia:4.37.5
+
+theme: auto
+
+defaultRedirectUrl: https://example.local
+domain: example.local
+
+users: [ ]
+
+service:
+  type: ClusterIP
+
+metrics:
+  enable: false
+  port: 9959
+
+ingress:
+  hostname: auth.example.local

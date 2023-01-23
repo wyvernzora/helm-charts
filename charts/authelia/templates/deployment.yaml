@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+    {{- include "authelia.labels" . | nindent 4 }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+        {{- include "authelia.labels" . | nindent 8 }}
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: authelia
+          image: {{ .Values.deployment.image }}
+          imagePullPolicy: IfNotPresent
+
+          env:
+            - name: AUTHELIA_SECRET_ROOT
+              value: /config/secret
+            - name: AUTHELIA_JWT_SECRET_FILE
+              value: $(AUTHELIA_SECRET_ROOT)/jwt-secret
+            - name: AUTHELIA_SESSION_SECRET_FILE
+              value: $(AUTHELIA_SECRET_ROOT)/session-secret
+            - name: AUTHELIA_STORAGE_ENCRYPTION_KEY_FILE
+              value: $(AUTHELIA_SECRET_ROOT)/storage-secret
+
+          ports:
+            - name: http
+              containerPort: 9091
+              protocol: TCP
+            {{- if .Values.metrics.enable }}
+            - name: metrics
+              containerPort: 9959
+              protocol: TCP
+            {{- end }}
+
+          volumeMounts:
+            - name: var-log
+              mountPath: /var/log
+            - name: config-root
+              mountPath: /config
+            - name: config-files
+              mountPath: /config/configuration.yml
+              subPath: configuration.yaml
+            - name: config-files
+              mountPath: /config/users.yml
+              subPath: users.yaml
+            - name: secrets
+              mountPath: /config/secret
+
+      volumes:
+        - name: var-log
+          emptyDir:
+            medium: Memory
+        - name: config-root
+          emptyDir:
+            medium: Memory
+        - name: config-files
+          configMap:
+            name: {{ .Release.Name }}
+            items:
+              - key: configuration.yaml
+                path: configuration.yaml
+              - key: users.yaml
+                path: users.yaml
+        - name: secrets
+          secret:
+            secretName: {{ .Release.Name }}

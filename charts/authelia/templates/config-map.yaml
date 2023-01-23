@@ -1,0 +1,43 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    {{- include "authelia.labels" . | nindent 4 }}
+data:
+  configuration.yaml: |
+    theme: {{ .Values.theme | default "auto" }}
+    {{- if .Values.metrics.enable }}
+    telemetry:
+      metrics:
+        enabled: true
+    {{- end }}
+    ntp:
+      address: time.nist.gov
+    authentication_backend:
+      password_reset:
+        disable: true
+      file:
+        path: /config/users.yml
+    access_control:
+      default_policy: one_factor
+    session:
+      domain: {{ .Values.domain }}
+    storage:
+      local:
+        path: /config/db.sqlite3
+    notifier:
+      filesystem:
+        filename: /var/log/authelia-notification.log
+  users.yaml: |
+    {{- if gt (len .Values.users) 0}}
+    users:
+    {{- range .Values.users }}
+      {{ .username }}:
+        displayname: {{ .displayname }}
+        email: {{ .email }}
+        password: {{ .password }}
+    {{- end }}
+    {{- else }}
+    users: [ ]
+    {{- end }}
