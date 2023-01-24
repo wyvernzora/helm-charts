@@ -4,7 +4,7 @@ deployment:
 
 theme: auto
 
-defaultRedirectUrl: https://example.local
+defaultRedirectUrl: null
 domain: example.local
 
 users: [ ]

@@ -2,7 +2,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ .Release.Name }}
+  name: {{ print .Release.Name "-ingress" }}
   labels:
     {{- include "authelia.labels" . | nindent 4 }}
 spec:

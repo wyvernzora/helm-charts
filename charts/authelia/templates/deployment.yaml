@@ -17,6 +17,9 @@ spec:
       labels:
         app: {{ .Release.Name }}
         {{- include "authelia.labels" . | nindent 8 }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/config-map.yaml") . | sha256sum }}
+        checksum/values: {{ $.Values | toYaml | sha256sum }}
     spec:
       restartPolicy: Always
       containers:
@@ -67,7 +70,7 @@ spec:
             medium: Memory
         - name: config-files
           configMap:
-            name: {{ .Release.Name }}
+            name: {{ print .Release.Name "-config" }}
             items:
               - key: configuration.yaml
                 path: configuration.yaml
@@ -75,4 +78,4 @@ spec:
                 path: users.yaml
         - name: secrets
           secret:
-            secretName: {{ .Release.Name }}
+            secretName: {{ print .Release.Name "-secret" }}
