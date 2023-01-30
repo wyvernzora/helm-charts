@@ -1,0 +1,22 @@
+{{ with .Values.services.piholeDns -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "pihole.name" $ }}-dns
+  labels:
+    {{- include "pihole.labels" $ | nindent 4 }}
+spec:
+  type: {{ .type }}
+  selector:
+    app: pihole
+  ports:
+    - name: dns-tcp
+      protocol: TCP
+      port: 53
+    - name: dns-udp
+      protocol: UDP
+      port: 53
+  {{- if and (eq .type "LoadBalancer") .loadBalancerIP }}
+  loadBalancerIP: {{ .loadBalancerIP }}
+  {{- end }}
+{{- end }}

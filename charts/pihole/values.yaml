@@ -1,0 +1,58 @@
+# Default values for pihole.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+timezone: America/Los_Angeles
+
+# Images in use and overrides
+images:
+  pihole: pihole/pihole:2023.01.5
+  unbound: mvance/unbound:1.17.0
+
+# Configuration for generated service resources
+services:
+
+  unbound:
+    type: ClusterIP
+  
+  piholeDns:
+    type: LoadBalancer
+    # loadBalancerIP: 192.168.1.1
+  
+  piholeWeb:
+    enabled: true
+    type: ClusterIP
+    hostname: pi.hole
+
+# Authentication when visiting web UIs
+authentication:
+
+  # Uses pihole builtin password auth
+  password:
+    enabled: true
+    secretName: '{{ include "pihole.name" . }}-secret'
+    passwordKey: password
+  
+  # Uses forward auth middleware
+  forwardAuth:
+    enabled: false
+    # address: http://authelia.authelia.svc.cluster.local/api/verify
+
+localDnsEntries:
+  A: { }
+    # example.com: 192.168.1.1
+  CNAME: { }
+    # cname.example.com: [ example.com ]
+
+blocking:
+  adlists: [ ]
+    # - https://example.com/list.txt
+
+  allowlist: [ ]
+    # - ads.example.com
+
+  denylist: [ ]
+    # - ads.example.com
+
+  regex: [ ]
+    # - (^|\.)facebook\.com$

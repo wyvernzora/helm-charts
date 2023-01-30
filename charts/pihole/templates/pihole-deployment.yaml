@@ -1,0 +1,122 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "pihole.name" $ }}
+  labels:
+    app: pihole
+    {{- include "pihole.labels" $ | nindent 4 }}
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: pihole
+  template:
+    metadata:
+      labels:
+        app: pihole
+        {{- include "pihole.labels" $ | nindent 8 }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/pihole-config.yaml") . | sha256sum | trunc 63 }}
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: pihole
+          image: {{ .Values.images.pihole }}
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: TZ
+              value: {{ .Values.timezone }}
+            - name: DNS1
+              value: '$(UNBOUND_SERVICE_HOST)'
+            - name: DNS2
+              value: '$(UNBOUND_SERVICE_HOST)'
+            {{- if .Values.services.piholeWeb.enabled }}
+            - name: VIRTUAL_HOST
+              value: {{ .Values.services.piholeWeb.hostname }}
+            {{- end }}
+            {{- with .Values.authentication.password}}
+            - name: WEBPASSWORD
+              {{- if .enabled }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ tpl .secretName $ | quote }}
+                  key: {{ .passwordKey }}
+              {{- else }}
+              value: ''
+              {{- end }}
+            {{- end }}
+          ports:
+            - name: dns-tcp
+              containerPort: 53
+              protocol: TCP
+            - name: dns-udp
+              containerPort: 53
+              protocol: UDP
+            - name: dhcp
+              containerPort: 67
+              protocol: UDP
+            - name: http
+              containerPort: 80
+              protocol: TCP
+            - name: https
+              containerPort: 443
+              protocol: TCP
+          volumeMounts:
+            - name: etc-pihole
+              mountPath: /etc/pihole
+            - name: etc-dnsmasq
+              mountPath: /etc/dnsmasq.d
+            - name: var-log
+              mountPath: /var/log
+            - name: var-log-lighttpd
+              mountPath: /var/log/lighttpd
+            - name: pihole-config
+              mountPath: /etc/pihole/adlists.list
+              subPath: adlists.list
+            - name: pihole-config
+              mountPath: /etc/pihole/whitelist.txt
+              subPath: whitelist.txt
+            - name: pihole-config
+              mountPath: /etc/pihole/blacklist.txt
+              subPath: blacklist.txt
+            - name: pihole-config
+              mountPath: /etc/pihole/regex.list
+              subPath: regex.list
+            - name: pihole-config
+              mountPath: /etc/dnsmasq.d/03_custom.conf
+              subPath: dnsmasq.conf
+            - name: pihole-config
+              mountPath: /etc/addn-hosts
+              subPath: addn-hosts
+          readinessProbe:
+            exec:
+              command: ['dig', '@127.0.0.1', 'example.com']
+            timeoutSeconds: 20
+            initialDelaySeconds: 5
+            periodSeconds: 30
+          livenessProbe:
+            tcpSocket:
+              port: dns-tcp
+            initialDelaySeconds: 15
+            periodSeconds: 30
+      volumes:
+        - name: etc-pihole
+          emptyDir:
+            medium: Memory
+        - name: etc-dnsmasq
+          emptyDir:
+            medium: Memory
+        - name: var-log
+          emptyDir:
+            medium: Memory
+        - name: var-log-lighttpd
+          emptyDir:
+            medium: Memory
+        - name: pihole-config
+          configMap:
+            name: {{ include "pihole.name" $ }}-config

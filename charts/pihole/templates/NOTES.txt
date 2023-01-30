@@ -1,0 +1,17 @@
+Pihole has been deployed.
+
+{{- with .Values.services.piholeDns }}
+{{- if eq .type "LoadBalancer"}}
+{{- if .loadBalancerIP }}
+Set your DNS sever to {{ .loadBalancerIP }}
+{{- else }}
+{{- $service := lookup "v1" "Service" $.Release.Namespace (include "pihole.name" $) }}
+Set your DNS sever to {{ (index $service.status.ingress 0).loadBalancerIP }}
+{{- end }}
+{{- else }}
+Pihole DNS was not deployed as a LoadBalancer service, therefore you may need additional setup to make it accessible.
+{{- end }}
+{{- end }}
+{{- with .Values.services.piholeWeb }}
+You can access the admin dashboard at https://{{ .hostname }}/admin/
+{{- end }}

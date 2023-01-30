@@ -1,0 +1,24 @@
+{{- with .Values.services.unbound -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: unbound
+  labels:
+    {{- include "pihole.labels" $ | nindent 4 }}
+spec:
+  type: {{ .type }}
+  selector:
+    app: unbound
+  ports:
+    - name: dns-tcp
+      protocol: TCP
+      port: 53
+      targetPort: 53
+    - name: dns-udp
+      protocol: UDP
+      port: 53
+      targetPort: 53
+  {{- if and (eq .type "LoadBalancer") .loadBalancerIP }}
+  loadBalancerIP: {{ .loadBalancerIP }}
+  {{- end }}
+{{- end -}}

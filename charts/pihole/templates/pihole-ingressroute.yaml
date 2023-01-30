@@ -1,0 +1,22 @@
+{{- if .Values.services.piholeWeb.enabled }}
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ include "pihole.name" $ }}-web
+  labels:
+    {{- include "pihole.labels" $ | nindent 4 }}
+spec:
+  routes:
+    - kind: Rule
+      match: Host(`{{ .Values.services.piholeWeb.hostname }}`)
+      services:
+        - kind: Service
+          namespace: {{ .Release.Namespace }}
+          name: {{ include "pihole.name" $ }}-web
+          port: 80
+      {{- if .Values.authentication.forwardAuth.enabled }}
+      middlewares:
+        - name: {{ include "pihole.name" $ }}-forward-auth
+          namespace: {{ .Release.Namespace }}
+      {{- end }}
+{{- end }}

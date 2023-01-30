@@ -1,0 +1,15 @@
+{{- with .Values.authentication.forwardAuth }}
+{{- if and .enabled $.Values.services.piholeWeb.enabled }}
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ include "pihole.name" $ }}-forward-auth
+  labels:
+    {{- include "pihole.labels" $ | nindent 4 }}
+spec:
+  forwardAuth:
+    address: {{ .address | quote }}
+
+{{- end }}
+{{- end }}
