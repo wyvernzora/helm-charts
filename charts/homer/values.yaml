@@ -1,0 +1,84 @@
+# Default values for homer
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image: ghcr.io/wyvernzora/homer:v22.11.2
+
+scaling:
+  replicas: 2
+  strategy: RollingUpdate
+  maxSurge: 1
+  maxUnavailable: 1
+
+service:
+  type: ClusterIP
+  # loadBalancerIP: 192.168.1.1
+  # hostname: homer.example.com
+
+# Homer configuration
+# See https://github.com/wyvernzora/homer/blob/v22.11.2/docs/configuration.md
+config:
+  # Homepage configuration
+  # See https://fontawesome.com/v5/search for icons options
+
+  # Optional: Use external configuration file.
+  # Using this will ignore remaining config in this file
+  # externalConfig: https://example.com/server-luci/config.yaml
+
+  title: "App dashboard"
+  subtitle: "Homer"
+  columns: "3" # "auto" or number (must be a factor of 12: 1, 2, 3, 4, 6, 12)
+
+  # Set the default layout and color scheme
+  defaults:
+    layout: columns # Either 'columns', or 'list'
+    colorTheme: auto # One of 'auto', 'light', or 'dark'
+
+  # Optional navbar
+  # links: [] # Allows for navbar (dark mode, layout, and search) without any links
+  links:
+    - name: "Link 1"
+      icon: "fab fa-github"
+      url: "https://github.com/bastienwirtz/homer"
+      target: "_blank" # optional html tag target attribute
+    - name: "link 2"
+      icon: "fas fa-book"
+      url: "https://github.com/bastienwirtz/homer"
+
+  # Services
+  # First level array represents a group.
+  # Leave only a "items" key if not using group (group name, icon & tagstyle are optional, section separation will not be displayed).
+  services:
+    - name: "Application"
+      icon: "fas fa-code-branch"
+      # A path to an image can also be provided. Note that icon take precedence if both icon and logo are set.
+      # logo: "path/to/logo"
+      items:
+        - name: "Awesome app"
+          logo: "assets/tools/sample.png"
+          # Alternatively a fa icon can be provided:
+          # icon: "fab fa-jenkins"
+          subtitle: "Bookmark example"
+          tag: "app"
+          keywords: "self hosted reddit" # optional keyword used for searching purpose
+          url: "https://www.reddit.com/r/selfhosted/"
+          target: "_blank" # optional html tag target attribute
+        - name: "Another one"
+          logo: "assets/tools/sample2.png"
+          subtitle: "Another application"
+          tag: "app"
+          # Optional tagstyle
+          tagstyle: "is-success"
+          url: "#"
+    - name: "Other group"
+      icon: "fas fa-heartbeat"
+      items:
+        - name: "Pi-hole"
+          logo: "assets/tools/sample.png"
+          # subtitle: "Network-wide Ad Blocking" # optional, if no subtitle is defined, PiHole statistics will be shown
+          tag: "other"
+          url: "http://192.168.0.151/admin"
+          type: "PiHole" # optional, loads a specific component that provides extra features. MUST MATCH a file name (without file extension) available in `src/components/services`
+          target: "_blank" # optional html a tag target attribute
+          # class: "green" # optional custom CSS class for card, useful with custom stylesheet
+          # background: red # optional color for card to set color directly without custom stylesheet

@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "homer.name" $ }}
+  labels:
+    {{- include "homer.labels" $ | nindent 4 }}
+spec:
+  {{- with .Values.scaling }}
+  replicas: {{ .replicas }}
+  strategy:
+    type: {{ .strategy }}
+    {{- if eq .strategy "RollingUpdate"}}
+    rollingUpdate:
+      maxSurge: {{ .maxSurge }}
+      maxUnavailable: {{ .maxUnavailable }}
+    {{- end }}
+  {{- end }}
+  selector:
+    matchLabels:
+      app: homer
+  template:
+    metadata:
+      name: {{ include "homer.name" $ }}
+      labels:
+        app: homer
+        {{- include "homer.labels" $ | nindent 8 }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") $ | sha256sum | trunc 63 }}
+    spec:
+      restartPolicy: Always
+      containers:
+        - name: homer
+          image: {{ .Values.image }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - name: homer-config
+              mountPath: /www/assets/config.yml
+              subPath: config.yaml
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+      volumes:
+        - name: homer-config
+          configMap:
+            name: {{ include "homer.name" $ }}-config
