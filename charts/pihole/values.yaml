@@ -25,6 +25,13 @@ services:
     type: ClusterIP
     hostname: pi.hole
 
+scaling:
+  replicas: 2
+  strategy: RollingUpdate
+  maxSurge: 1
+  maxUnavailable: 1
+  spreadAcrossNodes: yes # Adds a topologySpreadConstraint
+
 # Authentication when visiting web UIs
 authentication:
 

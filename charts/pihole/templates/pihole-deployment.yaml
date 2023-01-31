@@ -6,12 +6,16 @@ metadata:
     app: pihole
     {{- include "pihole.labels" $ | nindent 4 }}
 spec:
-  replicas: 2
+  {{- with .Values.scaling }}
+  replicas: {{ .replicas }}
   strategy:
-    type: RollingUpdate
+    type: {{ .strategy }}
+    {{- if eq .strategy "RollingUpdate"}}
     rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
+      maxSurge: {{ .maxSurge }}
+      maxUnavailable: {{ .maxUnavailable }}
+    {{- end }}
+  {{- end }}
   selector:
     matchLabels:
       app: pihole
@@ -120,3 +124,12 @@ spec:
         - name: pihole-config
           configMap:
             name: {{ include "pihole.name" $ }}-config
+      {{- if .Values.scaling.spreadAcrossNodes }}
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: node
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: pihole
+      {{- end }}
