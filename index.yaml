@@ -3,6 +3,20 @@ entries:
   authelia:
   - apiVersion: v2
     appVersion: 4.37.5
+    created: "2023-01-31T22:48:12.745330009Z"
+    dependencies:
+    - name: authelia
+      repository: https://charts.authelia.com
+      version: 0.8.53
+    description: A local-only stateless deployment of Authelia for home lab environmen
+    digest: e0ddae0bac95425c95cb76ba0d21bf8cb31da30893b6b29186f83a8be4a9d0a4
+    name: authelia
+    type: application
+    urls:
+    - https://github.com/wyvernzora/helm-charts/releases/download/authelia-1.1.0/authelia-1.1.0.tgz
+    version: 1.1.0
+  - apiVersion: v2
+    appVersion: 4.37.5
     created: "2023-01-31T02:01:01.968385427Z"
     dependencies:
     - name: authelia
