@@ -16,6 +16,7 @@ spec:
     - name: dns-udp
       protocol: UDP
       port: 53
+  externalTrafficPolicy: {{ .externalTrafficPolicy }}
   {{- if and (eq .type "LoadBalancer") .loadBalancerIP }}
   loadBalancerIP: {{ .loadBalancerIP }}
   {{- end }}
