@@ -29,6 +29,16 @@ entries:
   pihole:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2023-01-31T03:23:56.397843033Z"
+    description: A Helm chart for Kubernetes
+    digest: b1a84713d6e694ec2ab5c955d11bf7ea1b8cd6dea23e520e03ef79c3f7ff0e85
+    name: pihole
+    type: application
+    urls:
+    - https://github.com/wyvernzora/helm-charts/releases/download/pihole-1.0.2/pihole-1.0.2.tgz
+    version: 1.0.2
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2023-01-31T02:01:02.360559071Z"
     description: A Helm chart for Kubernetes
     digest: a899c3e5f442069e801b557c28f18b094a6c4efa6b658f1bd670bf556eb71011
