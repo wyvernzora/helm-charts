@@ -1,0 +1,40 @@
+apiVersion: v1
+entries:
+  authelia:
+  - apiVersion: v2
+    appVersion: 4.37.5
+    created: "2023-01-31T02:01:01.968385427Z"
+    dependencies:
+    - name: authelia
+      repository: https://charts.authelia.com
+      version: 0.8.53
+    description: A local-only stateless deployment of Authelia for home lab environmen
+    digest: c48deb149c6d3b459f6da1d417a98fce4b254430b65a5be686026b4d186cbc70
+    name: authelia
+    type: application
+    urls:
+    - https://github.com/wyvernzora/helm-charts/releases/download/authelia-1.0.1/authelia-1.0.1.tgz
+    version: 1.0.1
+  homer:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2023-01-31T02:01:02.141194601Z"
+    description: Installs homer dashboard
+    digest: 70d3b185f3ff65a6d74528971773584584b29bb644909faf19056457314bf539
+    name: homer
+    type: application
+    urls:
+    - https://github.com/wyvernzora/helm-charts/releases/download/homer-1.0.1/homer-1.0.1.tgz
+    version: 1.0.1
+  pihole:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2023-01-31T02:01:02.360559071Z"
+    description: A Helm chart for Kubernetes
+    digest: a899c3e5f442069e801b557c28f18b094a6c4efa6b658f1bd670bf556eb71011
+    name: pihole
+    type: application
+    urls:
+    - https://github.com/wyvernzora/helm-charts/releases/download/pihole-1.0.1/pihole-1.0.1.tgz
+    version: 1.0.1
+generated: "2023-01-31T02:01:01.729457195Z"
