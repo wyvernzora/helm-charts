@@ -18,6 +18,16 @@ entries:
   homer:
   - apiVersion: v2
     appVersion: 1.16.0
+    created: "2023-01-31T21:37:07.235192179Z"
+    description: Installs homer dashboard
+    digest: ae0cca8184d6553467ff8fb8c2b8ff143a16870daa2c79e5a27ac95ee8315c6e
+    name: homer
+    type: application
+    urls:
+    - https://github.com/wyvernzora/helm-charts/releases/download/homer-1.1.0/homer-1.1.0.tgz
+    version: 1.1.0
+  - apiVersion: v2
+    appVersion: 1.16.0
     created: "2023-01-31T02:01:02.141194601Z"
     description: Installs homer dashboard
     digest: 70d3b185f3ff65a6d74528971773584584b29bb644909faf19056457314bf539
@@ -27,6 +37,16 @@ entries:
     - https://github.com/wyvernzora/helm-charts/releases/download/homer-1.0.1/homer-1.0.1.tgz
     version: 1.0.1
   pihole:
+  - apiVersion: v2
+    appVersion: 1.16.0
+    created: "2023-01-31T21:37:07.373136275Z"
+    description: A Helm chart for Kubernetes
+    digest: 58b83d5029b942cf50ae030242ff92b7d028f63ca32a0674f82d223fcd366e0b
+    name: pihole
+    type: application
+    urls:
+    - https://github.com/wyvernzora/helm-charts/releases/download/pihole-1.1.0/pihole-1.1.0.tgz
+    version: 1.1.0
   - apiVersion: v2
     appVersion: 1.16.0
     created: "2023-01-31T03:23:56.397843033Z"
