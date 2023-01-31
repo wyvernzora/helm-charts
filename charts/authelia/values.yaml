@@ -81,6 +81,12 @@ authelia:
       file:
         enabled: true
       
+    
+    # Identity providers, specifically OIDC
+    identity_providers:
+      oidc:
+        enabled: false
+      
     ##
     ## Access Control Configuration
     ##
@@ -151,7 +157,6 @@ authelia:
         filename: /var/authelia/notifications.log
       smtp:
         enabled: false
-    
 
   ##
   ## Authelia Secret Generator.
