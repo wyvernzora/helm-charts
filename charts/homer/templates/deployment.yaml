@@ -52,3 +52,12 @@ spec:
         - name: homer-config
           configMap:
             name: {{ include "homer.name" $ }}-config
+      {{- if .Values.scaling.spreadAcrossNodes }}
+      topologySpreadConstraints:
+        - maxSkew: 1
+          topologyKey: node
+          whenUnsatisfiable: ScheduleAnyway
+          labelSelector:
+            matchLabels:
+              app: homer
+      {{- end }}

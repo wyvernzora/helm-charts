@@ -9,6 +9,7 @@ scaling:
   strategy: RollingUpdate
   maxSurge: 1
   maxUnavailable: 1
+  spreadAcrossNodes: yes # Adds a topologySpreadConstraint
 
 service:
   type: ClusterIP
