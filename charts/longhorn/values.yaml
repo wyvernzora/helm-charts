@@ -1,0 +1,15 @@
+
+hostname: longhorn.example.com
+
+# Adds authentication to the ingressroute if enabled
+authentication:
+
+  # Forward auth
+  forwardAuth:
+    enabled: false
+    # address: http://authelia.authelia.svc.cluster.local/api/verify
+
+# Longhorn defaults that are different from out-of-the-box defaults
+longhorn:
+  defaultSettings:
+    defaultDataLocality: best-effort

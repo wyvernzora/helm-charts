@@ -1,0 +1,20 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ include "longhorn.name" $ }}-web
+  labels:
+    {{- include "longhorn.labels" $ | nindent 4 }}
+spec:
+  routes:
+    - kind: Rule
+      match: Host(`{{ .Values.hostname }}`)
+      services:
+        - kind: Service
+          namespace: {{ .Release.Namespace }}
+          name: longhorn-frontend
+          port: 80
+      {{- if .Values.authentication.forwardAuth.enabled }}
+      middlewares:
+        - name: {{ include "longhorn.name" $ }}-forward-auth
+          namespace: {{ .Release.Namespace }}
+      {{- end }}
