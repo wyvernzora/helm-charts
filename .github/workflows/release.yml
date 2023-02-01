@@ -22,6 +22,7 @@ jobs:
       - name: Set up helm repositories
         run: |
           helm repo add authelia https://charts.authelia.com
+          helm repo add longhorn https://charts.longhorn.io
           helm repo update
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@v1.1.0
