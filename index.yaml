@@ -50,6 +50,21 @@ entries:
     urls:
     - https://github.com/wyvernzora/helm-charts/releases/download/homer-1.0.1/homer-1.0.1.tgz
     version: 1.0.1
+  longhorn:
+  - apiVersion: v2
+    appVersion: 1.4.0
+    created: "2023-02-01T21:22:32.250762477Z"
+    dependencies:
+    - name: longhorn
+      repository: https://charts.longhorn.io
+      version: 1.4.0
+    description: Longhorn with Traefik ingress and forward auth
+    digest: 5e323b9ce90f5c6a7d28bdb8ebd8ad22f47935fd20a12beef84cab18d2895495
+    name: longhorn
+    type: application
+    urls:
+    - https://github.com/wyvernzora/helm-charts/releases/download/longhorn-1.0.0/longhorn-1.0.0.tgz
+    version: 1.0.0
   pihole:
   - apiVersion: v2
     appVersion: 1.16.0
