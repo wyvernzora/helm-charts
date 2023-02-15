@@ -6,8 +6,9 @@ timezone: America/Los_Angeles
 
 # Images in use and overrides
 images:
-  pihole: pihole/pihole:2023.01.5
+  pihole: pihole/pihole:2023.02.1
   unbound: mvance/unbound:1.17.0
+  pylon: ghcr.io/wyvernzora/pylon:v0.1.1
 
 # Configuration for generated service resources
 services:
@@ -31,6 +32,15 @@ scaling:
   maxSurge: 1
   maxUnavailable: 1
   spreadAcrossNodes: yes # Adds a topologySpreadConstraint
+
+# Pylon
+pylon:
+  enabled: false
+  # influxdb2:
+    # url: https://influxdb.example.com
+    # token: super-secret-token
+    # orgName: example-org
+    # bucketName: example-bucket
 
 # Authentication when visiting web UIs
 authentication:

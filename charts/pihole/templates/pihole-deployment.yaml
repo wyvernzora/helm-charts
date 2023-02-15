@@ -108,7 +108,33 @@ spec:
               port: dns-tcp
             initialDelaySeconds: 15
             periodSeconds: 30
+        {{- with .Values.pylon }}
+        {{- if .enable }}
+        - name: pylon
+          image: {{ $.Values.images.pylon }}
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PYLON_EXPORT_DEST
+              value: influxdb2
+            - name: INFLUXDB2_URL
+              value: {{ .influxdb2.url }}
+            - name: INFLUXDB2_TOKEN
+              value: {{ .influxdb2.token }}
+            - name: INFLUXDB2_ORG
+              value: {{ .influxdb2.orgName }}
+            - name: INFLUXDB2_BUCKET
+              value: {{ .influxdb2.bucketName }}
+          volumeMounts:
+            - name: etc-pihole
+              mountPath: /etc/pihole
+            - name: tmp-pylon
+              mountPath: /tmp/pylon
+        {{- end }}
+        {{- end }}
       volumes:
+        - name: tmp-pylon
+          emptyDir:
+            medium: Memory
         - name: etc-pihole
           emptyDir:
             medium: Memory
