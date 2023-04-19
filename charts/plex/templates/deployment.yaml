@@ -1,0 +1,148 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "plex.name" $ }}
+  labels:
+    {{- include "plex.labels" $ | nindent 4}}
+
+spec:
+
+  {{- with .Values.scaling }}
+  replicas: {{ .replicas }}
+  strategy: 
+    type: {{ .strategy }}
+  {{- end }}
+
+  selector:
+    matchLabels:
+      app: plex-media-server
+
+  template:
+    metadata:
+      name: {{ include "plex.name" $ }}
+      labels:
+        app: plex-media-server
+        {{- include "plex.labels" $ | nindent 8 }}
+      annotations: { }
+    spec:
+      restartPolicy: Always
+
+      {{- with .Values.persistence }}
+      volumes:
+        
+        # Plex config data volume
+        - name: plex-config
+          {{- if .config.storageClassName }}
+          persistentVolumeClaim:
+            claimName: plex-config
+          {{- else }}
+          {{- .config.spec | toYaml | nindent 10 }}
+          {{- end }}
+        
+        {{- if .metadata }}
+        # Plex metadata volume
+        - name: plex-metadata
+          {{- if .metadata.storageClassName }}
+          persistentVolumeClaim:
+            claimName: plex-metadata
+          {{- else }}
+          {{- .metadata.spec | toYaml | nindent 10 }}
+          {{- end }}
+        {{- end }}
+
+        {{- if .ephemeralLogs }}
+        # Plex logs ephemeral volume
+        - name: plex-logs
+          emptyDir: { }
+        {{- end }}
+
+        {{- range .extraVolumes }}
+        # Additional volumes, such as media library
+        - name: {{ .name | quote }}
+          {{- .spec | toYaml | nindent 10 }}
+        {{- end }}
+      {{- end }}
+
+      containers:
+        - name: plex-media-server
+          image: {{ .Values.images.plex }}
+          imagePullPolicy: IfNotPresent
+
+          env:
+            - name: PLEX_UID
+              value: {{ .Values.uid | default "1001" | quote }}
+            - name: PLEX_GID
+              value: {{ .Values.gid | default "1001" | quote }}
+            - name: TZ
+              value: {{ .Values.timezone | default "UTC" | quote }}
+            - name: ADVERTISE_IP
+              value: 'https://{{ .Values.ingress.host }}'
+            - name: CHANGE_CONFIG_DIR_OWNERSHIP
+              value: 'false'
+            - name: VERSION
+              value: docker
+
+            {{- if .Values.claim }}
+            - name: PLEX_CLAIM
+              value: {{ .Values.claim | quote }}
+            {{- end }}
+
+          ports:
+            # Main Plex TCP port
+            - name: plex
+              containerPort: 32400
+              protocol: TCP
+            # DLNA Server
+            - name: dlna1
+              containerPort: 1900
+              protocol: UDP
+            - name: dlna2
+              containerPort: 32469
+              protocol: TCP
+            # Bonjour service discovery
+            - name: bonjour
+              containerPort: 5353
+              protocol: UDP
+            # GDM service discovery
+            - name: gdm1
+              containerPort: 32410
+              protocol: UDP
+            - name: gdm2
+              containerPort: 32412
+              protocol: UDP
+            - name: gdm3
+              containerPort: 32413
+              protocol: UDP
+            - name: gdm4
+              containerPort: 32414
+              protocol: UDP
+            # Plex for Roku
+            - name: roku
+              containerPort: 8324
+              protocol: TCP
+
+          {{- with .Values.persistence }}
+          volumeMounts:
+            - name: plex-config
+              mountPath: '{{ .plexRoot }}'
+            {{- if .metadata }}
+            - name: plex-metadata
+              mountPath: '{{ .plexRoot }}/Metadata'
+            {{- end }}
+            {{- if .ephemeralLogs }}
+            - name: plex-logs
+              mountPath: '{{ .plexRoot }}/Logs'
+              subPath: Logs
+            - name: plex-logs
+              mountPath: '{{ .plexRoot }}/Diagnostics'
+              subPath: Diagnostics
+            - name: plex-logs
+              mountPath: '{{ .plexRoot }}/Crash Reports'
+              subPath: 'Crash Reports'
+            {{- end }}
+
+            {{- range .extraVolumes }}
+            - name: {{ .name | quote }}
+              mountPath: {{ .mountPath | quote }}
+            {{- end }}
+          {{- end }}

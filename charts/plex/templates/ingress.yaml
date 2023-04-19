@@ -1,0 +1,19 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: plex-ingress
+  labels:
+    {{- include "plex.labels" $ | nindent 4 }}
+spec:
+  routes:
+    - kind: Rule
+      match: Host(`{{ .Values.ingress.host }}`)
+      services:
+        - kind: Service
+          namespace: {{ .Release.Namespace }}
+          name: plex-internal
+          port: 80
+  tls:
+    secretName: plex-tls-cert
+    domains:
+      - main: {{ .Values.ingress.host | quote }}

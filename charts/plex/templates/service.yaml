@@ -1,0 +1,67 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: plex-internal
+  labels:
+    {{- include "plex.labels" $ | nindent 4 }}
+spec:
+  type: ClusterIP
+  selector:
+    app: plex-media-server
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 32400
+---
+{{- with .Values.service }}
+{{- if and .dlna .bonjour .gdm }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: plex-external
+  labels:
+    {{- include "plex.labels" $ | nindent 4 }}
+  annotations:
+    metallb.universe.tf/allow-shared-ip: plex
+spec:
+  type: LoadBalancer
+  selector:
+    app: plex-media-server
+  ports:
+    
+    {{- if .dlna }}
+    # DLNA Server
+    - name: dlna1
+      protocol: UDP
+      port: 1900
+    - name: dlna2
+      protocol: TCP
+      port: 32469
+    {{- end }}
+    
+    {{- if .bonjour }}
+    # Bonjour service discovery
+    - name: bonjour
+      protocol: UDP
+      port: 5353
+    {{- end }}
+
+    {{- if .gdm }}
+     # GDM service discovery
+    - name: gdm1
+      protocol: UDP
+      port: 32410
+    - name: gdm2
+      protocol: UDP
+      port: 32412
+    - name: gdm3
+      protocol: UDP
+      port: 32413
+    - name: gdm4
+      protocol: UDP
+      port: 32414
+    {{- end }}
+
+{{- end }}
+{{- end }}

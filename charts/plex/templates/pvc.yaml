@@ -1,0 +1,37 @@
+{{- with .Values.persistence }}
+
+{{- if .config.storageClassName }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: plex-config
+  labels:
+    {{- include "plex.labels" $ | nindent 4}}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .config.volumeSize | quote }}
+  storageClassName: {{ .config.storageClassName | quote }}
+{{- end }}
+
+---
+
+{{- if .metadata.storageClassName }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: plex-metadata
+  labels:
+    {{- include "plex.labels" $ | nindent 4}}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .metadata.volumeSize | quote }}
+  storageClassName: {{ .metadata.storageClassName | quote }}
+{{- end }}
+
+{{- end}}

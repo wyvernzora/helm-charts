@@ -1,0 +1,15 @@
+{{- if .Values.ingress.tlsCert }}
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: plex-tls-cert
+  labels:
+    {{- include "plex.labels" $ | nindent 4 }}
+spec:
+  commonName: {{ .Values.ingress.tlsCert.commonName | quote }}
+  dnsNames:
+   - {{ .Values.ingress.tlsCert.commonName | quote }}
+  issuerRef:
+    {{- .Values.ingress.tlsCert.issuerRef | toYaml | nindent 4 }}
+  secretName: plex-tls-cert
+{{- end }}

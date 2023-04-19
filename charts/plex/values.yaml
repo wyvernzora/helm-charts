@@ -1,0 +1,65 @@
+images:
+  plex: plexinc/pms-docker:1.32.0.6950-8521b7d99
+
+# User and Group IDs that Plex runs with
+# uid: 1001
+# gid: 1001
+
+# Server timezone
+# timezone: UTC
+
+scaling:
+  replicas: 1
+  strategy: Recreate
+
+# Persistent data configuration
+persistence:
+  plexRoot: '/config/Library/Application Support/Plex Media Server'
+
+  # Plex config data store volume
+  # config:
+  #   storageClassName: longhorn
+  #   volumeSize: 4Gi
+  # spec:
+  #   emptyDir: { }
+
+  # Plex metadata volume
+  # metadata:
+  #   storageClassName: longhorn
+  #   volumeSize: 10Gi
+  # spec:
+  #   emptyDir: { }
+
+  # When set to true, Plex logs, diagnostics and crash reports are stored in a
+  # temporary directory that is wiped when pod is terminated
+  # ephemeralLogs: true
+
+  # Additional volumes
+  extraVolumes: [ ]
+
+# Services to open ports for
+services:
+  dlna: false
+  bonjour: false
+  gdm: false
+
+# Ingress and TLS termination
+ingress:
+  host: plex.example.com
+  # tlsCert:
+  #   commonName: "*.example.com"
+  #   issuerRef:
+  #     kind: ClusterIssuer
+  #     name: letsencrypt
+
+# Dependency chart values
+traefik:
+  ingressClass:
+    isDefaultClass: false
+  providers:
+    kubernetesCRD:
+      namespaces:
+        - plex
+  service:
+    annotations:
+      metallb.universe.tf/allow-shared-ip: plex
