@@ -106,4 +106,19 @@ entries:
     urls:
     - https://github.com/wyvernzora/helm-charts/releases/download/pihole-1.0.1/pihole-1.0.1.tgz
     version: 1.0.1
+  plex:
+  - apiVersion: v2
+    appVersion: 1.32.0.6950-8521b7d99
+    created: "2023-04-19T01:31:52.27308852Z"
+    dependencies:
+    - name: traefik
+      repository: https://traefik.github.io/charts
+      version: v22.1.0
+    description: Plex Media Server with dedicated Traefik ingress controller
+    digest: 26bbe4ee9e36de246b066bc404372d98fdcb9a51be0ea3b42b599d046ed1a50f
+    name: plex
+    type: application
+    urls:
+    - https://github.com/wyvernzora/helm-charts/releases/download/plex-0.0.1/plex-0.0.1.tgz
+    version: 0.0.1
 generated: "2023-01-31T02:01:01.729457195Z"
