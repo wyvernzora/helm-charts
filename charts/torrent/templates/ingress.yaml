@@ -1,0 +1,27 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: torrent-https-redirect
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: torrent
+  labels:
+    {{- include "torrent.labels" $ | nindent 4 }}
+spec:
+  routes:
+    - kind: Rule
+      match: Host(`{{ .Values.ingress.host }}`)
+      services:
+        - kind: Service
+          namespace: {{ .Release.Namespace }}
+          name: {{ include "torrent.name" $ }}-qbittorrent
+          port: 80
+      middlewares:
+        - name: torrent-https-redirect
+

@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "torrent.name" $ }}-qbittorrent
+  labels:
+    {{- include "torrent.labels" $ | nindent 4 }}
+
+spec:
+
+  {{- with .Values.scaling }}
+  replicas: {{ .replicas }}
+  strategy: 
+    {{- .strategy | toYaml | nindent 4 }}
+  {{- end }}
+
+  selector:
+    matchLabels:
+      app: {{ include "torrent.name" $ }}-qbittorrent
+  
+  template:
+    metadata:
+      name: {{ include "torrent.name" $ }}-qbittorrent
+      labels:
+        app: {{ include "torrent.name" $ }}-qbittorrent
+        {{- include "torrent.labels" $ | nindent 8 }}
+      annotations: { }
+    spec:
+      restartPolicy: Always
+
+      {{- with .Values.persistence }}
+      volumes:
+
+        # Configuration data volume
+        - name: {{ include "torrent.name" $ }}-qbittorrent-config
+          {{- if .config.storageClassName }}
+          persistentVolumeClaim:
+            claimName: {{ include "torrent.name" $ }}-qbittorrent-config
+          {{- else }}
+          {{- .config.spec | toYaml | nindent 10 }}
+          {{- end }}
+        
+        {{- range .extraVolumes }}
+        - name: {{ .name | quote }}
+          {{- .spec | toYaml | nindent 10 }}
+        {{- end }}
+      {{- end }}
+    
+      containers:
+        - name: qbittorrent
+          image: {{ .Values.images.qbittorrent }}
+          imagePullPolicy: IfNotPresent
+
+          env:
+            - name: PUID
+              value: {{ .Values.uid | default "1000" | quote }}
+            - name: PGID
+              value: {{ .Values.gid | default "1000" | quote }}
+            - name: UMASK
+              value: {{ .Values.umask | default "0" | quote }}
+            - name: TZ
+              value: {{ .Values.timezone | default "UTC" }}
+
+          ports:
+            - name: webui
+              containerPort: 8080
+              protocol: TCP
+            - name: dht-tcp
+              containerPort: 6881
+              protocol: TCP
+            - name: dht-udp
+              containerPort: 6881
+              protocol: UDP
+          
+          {{- with .Values.persistence }}
+          volumeMounts:
+            - name: {{ include "torrent.name" $ }}-qbittorrent-config
+              mountPath: /config
+            {{- range .extraVolumes }}
+            - name: {{ .name | quote }}
+              mountPath: {{ .mountPath | quote }}
+            {{- end }}
+          {{- end }}

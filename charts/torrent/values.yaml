@@ -1,0 +1,36 @@
+images:
+  qbittorrent: ghcr.io/hotio/qbittorrent:release-4.5.2
+
+# User and Group IDs that Plex runs with
+uid: 1000
+gid: 1000
+
+# Server timezone
+timezone: America/Los_Angeles
+
+scaling:
+  replicas: 1
+  strategy: 
+    type: Recreate
+
+persistence:
+
+  # Configuration data volume
+  config:
+  #  storageClassName: storage-class
+  #  volumeSize: 1Gi
+  spec:
+    emptyDir: { }
+
+  # Additional volumes
+  extraVolumes: [ ]
+  #  - name: data-volume
+  #    mountPath: /data
+  #    spec:
+  #      nfs:
+  #        server: 192.168.1.1
+  #        path: /mnt/data
+
+# Ingress and TLS termination
+ingress:
+  host: dl.example.com

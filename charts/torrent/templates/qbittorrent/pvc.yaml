@@ -1,0 +1,19 @@
+{{- with .Values.persistence }}
+
+{{- if .config.storageClassName }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "torrent.name" $ }}-qbittorrent-config
+  labels:
+    {{- include "torrent.labels" $ | nindent 4}}
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .config.volumeSize | quote }}
+  storageClassName: {{ .config.storageClassName | quote }}
+{{- end }}
+
+{{- end}}
