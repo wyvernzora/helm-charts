@@ -1,5 +1,5 @@
 images:
-  plex: plexinc/pms-docker:1.32.0.6950-8521b7d99
+  plex: plexinc/pms-docker:1.32.0.6973-a787c5a8e
 
 # User and Group IDs that Plex runs with
 # uid: 1001
@@ -20,15 +20,15 @@ persistence:
   # config:
   #   storageClassName: longhorn
   #   volumeSize: 4Gi
-  # spec:
-  #   emptyDir: { }
+  #   spec:
+  #     emptyDir: { }
 
   # Plex metadata volume
   # metadata:
   #   storageClassName: longhorn
   #   volumeSize: 10Gi
-  # spec:
-  #   emptyDir: { }
+  #   spec:
+  #     emptyDir: { }
 
   # When set to true, Plex logs, diagnostics and crash reports are stored in a
   # temporary directory that is wiped when pod is terminated
@@ -55,11 +55,15 @@ ingress:
 # Dependency chart values
 traefik:
   ingressClass:
+    enabled: true
     isDefaultClass: false
   providers:
     kubernetesCRD:
+      labelSelector: app.kubernetes.io/name=plex
       namespaces:
         - plex
+    kubernetesIngress:
+      enabled: false
   service:
     annotations:
       metallb.universe.tf/allow-shared-ip: plex
